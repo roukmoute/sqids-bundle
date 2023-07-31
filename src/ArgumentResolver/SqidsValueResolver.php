@@ -20,6 +20,7 @@ class SqidsValueResolver implements ValueResolverInterface
 
         if ($argument->isVariadic()
             || !\is_string($value)
+            || null === ($argument->getType())
         ) {
             return [];
         }

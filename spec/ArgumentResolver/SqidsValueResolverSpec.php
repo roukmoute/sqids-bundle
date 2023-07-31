@@ -44,6 +44,14 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);
     }
 
+    function it_fails_when_argument_lacks_type()
+    {
+        $request = new Request([], [], ['foo' => 'U9']);
+        $argumentMetadata = new ArgumentMetadata('foo', null, false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
     function it_resolves_sqids_argument()
     {
         $request = new Request([], [], ['foo' => 'U9']);
