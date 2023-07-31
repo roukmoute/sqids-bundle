@@ -16,6 +16,11 @@
             "Roukmoute\\SqidsBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\Roukmoute\\SqidsBundle\\": "spec/"
+        }
+    },
     "authors": [
         {
             "name": "Mathias STRASSER",
