@@ -1,1 +1,5 @@
 /vendor/
+/infection.log
+/build/coverage/xml/ArgumentResolver/SqidsValueResolver.php.xml
+/build/coverage/xml/index.xml
+/build/coverage/xml/SqidsBundle.php.xml

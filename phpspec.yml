@@ -2,3 +2,10 @@ suites:
   sqids_suite:
     namespace: Roukmoute\SqidsBundle
     psr4_prefix: Roukmoute\SqidsBundle
+
+extensions:
+  FriendsOfPhpSpec\PhpSpec\CodeCoverage\CodeCoverageExtension:
+    format:
+      - xml
+    output:
+      xml: build/coverage/xml
