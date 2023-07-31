@@ -1,0 +1,29 @@
+{
+    "name": "roukmoute/sqids-bundle",
+    "description": "Integrates sqids",
+    "type": "symfony-bundle",
+    "require": {
+        "php": "^8.2",
+        "sqids/sqids": "^0.0.1",
+        "symfony/http-kernel": "^6.3"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Roukmoute\\SqidsBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mathias STRASSER",
+            "email": "contact@roukmoute.fr"
+        }
+    ],
+    "minimum-stability": "stable",
+    "config": {
+        "allow-plugins": {
+            "phpro/grumphp": true,
+            "infection/extension-installer": true
+        }
+    }
+}
