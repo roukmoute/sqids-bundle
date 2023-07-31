@@ -77,4 +77,12 @@ class SqidsValueResolverSpec extends ObjectBehavior
 
         $this->shouldThrow(new NotFoundHttpException('The sqid for the "id" parameter is invalid.'))->during('resolve', [$request, $argumentMetadata]);
     }
+
+    function it_fails_with_sqid_with_bad_value_for_id()
+    {
+        $request = new Request([], [], ['id' => 'ccc']);
+        $argumentMetadata = new ArgumentMetadata('id', Sqids::class, false, false, null);
+
+        $this->shouldThrow(new NotFoundHttpException('The sqid for the "id" parameter is invalid.'))->during('resolve', [$request, $argumentMetadata]);
+    }
 }

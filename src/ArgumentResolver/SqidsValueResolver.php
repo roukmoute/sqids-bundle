@@ -42,6 +42,12 @@ class SqidsValueResolver implements ValueResolverInterface
             throw new InvalidArgumentException('Only one value expected');
         }
 
+        $decodedValue = $decodedValues[0];
+
+        if ($decodedValue === 0 && $this->sqids->encode([$decodedValue]) !== $value) {
+            throw new InvalidArgumentException('Invalid value');
+        }
+
         return $decodedValues;
     }
 }
