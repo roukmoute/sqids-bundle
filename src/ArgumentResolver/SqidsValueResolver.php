@@ -18,7 +18,9 @@ class SqidsValueResolver implements ValueResolverInterface
     {
         $value = $request->attributes->get($argument->getName());
 
-        if ($argument->isVariadic()) {
+        if ($argument->isVariadic()
+            || !\is_string($value)
+        ) {
             return [];
         }
 

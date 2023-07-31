@@ -28,6 +28,22 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);
     }
 
+    function it_fails_when_no_attribute_for_argument()
+    {
+        $request = new Request([], [], []);
+        $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
+    function it_fails_when_attribute_not_string()
+    {
+        $request = new Request([], [], ['foo' => ['bar']]);
+        $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
     function it_resolves_sqids_argument()
     {
         $request = new Request([], [], ['foo' => 'U9']);
