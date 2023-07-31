@@ -1,0 +1,4 @@
+suites:
+  sqids_suite:
+    namespace: Roukmoute\SqidsBundle
+    psr4_prefix: Roukmoute\SqidsBundle

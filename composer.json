@@ -7,6 +7,9 @@
         "sqids/sqids": "^0.0.1",
         "symfony/http-kernel": "^6.3"
     },
+    "require-dev": {
+        "phpspec/phpspec": "^7.4"
+    },
     "license": "MIT",
     "autoload": {
         "psr-4": {
