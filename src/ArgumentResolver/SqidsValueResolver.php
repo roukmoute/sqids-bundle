@@ -18,6 +18,10 @@ class SqidsValueResolver implements ValueResolverInterface
     {
         $value = $request->attributes->get($argument->getName());
 
+        if ($argument->isVariadic()) {
+            return [];
+        }
+
         return $this->sqids->decode($value);
     }
 }
