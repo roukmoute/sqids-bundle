@@ -2,11 +2,13 @@
 
 namespace spec\Roukmoute\SqidsBundle\ArgumentResolver;
 
+use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
 use Roukmoute\SqidsBundle\ArgumentResolver\SqidsValueResolver;
 use Sqids\Sqids;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SqidsValueResolverSpec extends ObjectBehavior
 {
@@ -66,5 +68,13 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([1]);
+    }
+
+    function it_fails_with_sqid_with_multiple_integers()
+    {
+        $request = new Request([], [], ['id' => 'XgbK']);
+        $argumentMetadata = new ArgumentMetadata('id', Sqids::class, false, false, null);
+
+        $this->shouldThrow(new NotFoundHttpException('The sqid for the "id" parameter is invalid.'))->during('resolve', [$request, $argumentMetadata]);
     }
 }
