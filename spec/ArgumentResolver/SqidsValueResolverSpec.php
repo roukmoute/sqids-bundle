@@ -2,7 +2,6 @@
 
 namespace spec\Roukmoute\SqidsBundle\ArgumentResolver;
 
-use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
 use Roukmoute\SqidsBundle\ArgumentResolver\SqidsValueResolver;
 use Sqids\Sqids;
@@ -84,5 +83,13 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $argumentMetadata = new ArgumentMetadata('id', Sqids::class, false, false, null);
 
         $this->shouldThrow(new NotFoundHttpException('The sqid for the "id" parameter is invalid.'))->during('resolve', [$request, $argumentMetadata]);
+    }
+
+    function it_resolves_with_value_equals_0()
+    {
+        $request = new Request([], [], ['id' => 'bV']);
+        $argumentMetadata = new ArgumentMetadata('id', Sqids::class, false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([0]);
     }
 }

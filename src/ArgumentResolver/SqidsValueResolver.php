@@ -44,10 +44,10 @@ class SqidsValueResolver implements ValueResolverInterface
 
         $decodedValue = $decodedValues[0];
 
-        if ($decodedValue === 0 && $this->sqids->encode([$decodedValue]) !== $value) {
+        if ($decodedValue === 0 && $this->sqids->encode($decodedValues) !== $value) {
             throw new InvalidArgumentException('Invalid value');
         }
 
-        return $decodedValues;
+        return [$decodedValue];
     }
 }
