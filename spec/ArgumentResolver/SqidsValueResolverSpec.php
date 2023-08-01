@@ -5,6 +5,7 @@ namespace spec\Roukmoute\SqidsBundle\ArgumentResolver;
 use PhpSpec\ObjectBehavior;
 use Roukmoute\SqidsBundle\ArgumentResolver\SqidsValueResolver;
 use Sqids\Sqids;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,6 +41,14 @@ class SqidsValueResolverSpec extends ObjectBehavior
     function it_fails_when_attribute_not_string()
     {
         $request = new Request([], [], ['foo' => ['bar']]);
+        $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
+    function it_fails_when_attribute_is_object()
+    {
+        $request = new Request([], [], ['foo' => new stdClass()]);
         $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);

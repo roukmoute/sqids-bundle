@@ -21,6 +21,7 @@ class SqidsValueResolver implements ValueResolverInterface
 
         if ($argument->isVariadic()
             || !\is_string($value)
+            || \is_object($value)
             || null === ($argument->getType())
             || !is_a($argument->getType(), Sqids::class, true)
         ) {
