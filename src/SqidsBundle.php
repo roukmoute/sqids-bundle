@@ -2,8 +2,8 @@
 
 namespace Roukmoute\SqidsBundle;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class SqidsBundle extends AbstractBundle
+class SqidsBundle extends Bundle
 {
 }
