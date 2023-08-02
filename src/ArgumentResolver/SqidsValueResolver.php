@@ -18,12 +18,13 @@ class SqidsValueResolver implements ValueResolverInterface
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $value = $request->attributes->get($argument->getName());
+        $type = $argument->getType();
 
         if ($argument->isVariadic()
             || !\is_string($value)
             || \is_object($value)
-            || null === ($argument->getType())
-            || !is_a($argument->getType(), Sqids::class, true)
+            || $type === null
+            || !is_a($type, Sqids::class, true)
         ) {
             return [];
         }
