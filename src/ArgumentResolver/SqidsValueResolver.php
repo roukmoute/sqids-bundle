@@ -28,10 +28,16 @@ class SqidsValueResolver implements ValueResolverInterface
             return [];
         }
 
+        $class = class_exists($type ?? '') ? $type : null;
+
+        if (!$class && $type !== 'int') {
+            return [];
+        }
+
         try {
             $decode = $this->decode($value);
 
-            if ($type !== 'int') {
+            if ($class) {
                 $request->attributes->set($argument->getName(), $decode[0]);
 
                 return [];
