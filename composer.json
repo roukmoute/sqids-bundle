@@ -3,7 +3,7 @@
     "description": "Integrates sqids",
     "type": "symfony-bundle",
     "require": {
-        "php": "^8.2",
+        "php": "^8.1",
         "sqids/sqids": "^0.0.1",
         "symfony/http-kernel": "^6.3"
     },
