@@ -73,7 +73,7 @@ class SqidsValueResolverSpec extends ObjectBehavior
     function it_resolves_sqids_argument()
     {
         $request = new Request([], [], ['foo' => 'U9']);
-        $argumentMetadata = new ArgumentMetadata('foo', Sqids::class, false, false, null);
+        $argumentMetadata = new ArgumentMetadata('foo', 'int', false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([1]);
     }
@@ -97,7 +97,7 @@ class SqidsValueResolverSpec extends ObjectBehavior
     function it_resolves_with_value_equals_0()
     {
         $request = new Request([], [], ['id' => 'bV']);
-        $argumentMetadata = new ArgumentMetadata('id', Sqids::class, false, false, null);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([0]);
     }

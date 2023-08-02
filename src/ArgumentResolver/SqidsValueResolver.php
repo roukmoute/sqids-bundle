@@ -24,7 +24,6 @@ class SqidsValueResolver implements ValueResolverInterface
             || !\is_string($value)
             || \is_object($value)
             || $type === null
-            || !is_a($type, Sqids::class, true)
         ) {
             return [];
         }
