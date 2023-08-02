@@ -29,7 +29,15 @@ class SqidsValueResolver implements ValueResolverInterface
         }
 
         try {
-            return $this->decode($value);
+            $decode = $this->decode($value);
+
+            if ($type !== 'int') {
+                $request->attributes->set($argument->getName(), $decode[0]);
+
+                return [];
+            }
+
+            return $decode;
         } catch (InvalidArgumentException $e) {
             throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $argument->getName()), $e);
         }
