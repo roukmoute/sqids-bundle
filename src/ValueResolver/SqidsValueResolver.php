@@ -25,6 +25,10 @@ class SqidsValueResolver implements ValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        if ($argument->isVariadic()) {
+            return [];
+        }
+
         $name = $argument->getName();
         $sqidAttribute = $this->getSqidAttribute($argument);
         $routeParameter = $sqidAttribute?->parameter ?? $name;
@@ -36,24 +40,44 @@ class SqidsValueResolver implements ValueResolverInterface
 
         $decoded = $this->sqids->decode($sqid);
 
-        if ($this->hasSqidDecoded($decoded)) {
-            /** @var int $decodedValue */
-            $decodedValue = reset($decoded);
+        if (!$this->isValidDecode($decoded, $isExplicit, $name)) {
+            return [];
+        }
 
-            if ($this->passthrough) {
-                $request->attributes->set($name, $decodedValue);
+        /** @var int $decodedValue */
+        $decodedValue = reset($decoded);
 
-                return [];
+        if ($this->passthrough) {
+            $request->attributes->set($name, $decodedValue);
+
+            return [];
+        }
+
+        return [$decodedValue];
+    }
+
+    /**
+     * @param array<int, int> $decoded
+     */
+    private function isValidDecode(array $decoded, bool $isExplicit, string $name): bool
+    {
+        if (!\is_int(reset($decoded))) {
+            if ($isExplicit) {
+                throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name));
             }
 
-            return [$decodedValue];
+            return false;
         }
 
-        if ($isExplicit) {
-            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name));
+        if (\count($decoded) > 1) {
+            if ($isExplicit) {
+                throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name));
+            }
+
+            return false;
         }
 
-        return [];
+        return true;
     }
 
     private function getSqidAttribute(ArgumentMetadata $argument): ?Sqid
@@ -122,13 +146,5 @@ class SqidsValueResolver implements ValueResolverInterface
     private function allCharsAreInAlphabet(string $sqid): bool
     {
         return (bool) preg_match(sprintf('{^[%s]+$}', preg_quote($this->alphabet, '{')), $sqid);
-    }
-
-    /**
-     * @param array<int, int> $decoded
-     */
-    private function hasSqidDecoded(array $decoded): bool
-    {
-        return \is_int(reset($decoded));
     }
 }
