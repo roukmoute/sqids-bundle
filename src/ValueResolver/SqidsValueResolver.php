@@ -45,7 +45,7 @@ class SqidsValueResolver implements ValueResolverInterface
         }
 
         /** @var int $decodedValue */
-        $decodedValue = reset($decoded);
+        $decodedValue = $decoded[0];
 
         if ($this->passthrough) {
             $request->attributes->set($name, $decodedValue);
@@ -61,7 +61,7 @@ class SqidsValueResolver implements ValueResolverInterface
      */
     private function isValidDecode(array $decoded, bool $isExplicit, string $name): bool
     {
-        if (!\is_int(reset($decoded))) {
+        if ($decoded === [] || !\is_int($decoded[0])) {
             if ($isExplicit) {
                 throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name));
             }
