@@ -69,7 +69,6 @@ $config->setRiskyAllowed(true)
             'ordered_interfaces' => true,
         ]
     )
-    ->setRiskyAllowed(true)
     ->setFinder($finder)
     ->setUsingCache(false)
 ;
