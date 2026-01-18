@@ -16,6 +16,9 @@ class SqidsValueResolver implements ValueResolverInterface
     {
     }
 
+    /**
+     * @return iterable<int>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $value = $request->attributes->get($argument->getName());
@@ -23,13 +26,12 @@ class SqidsValueResolver implements ValueResolverInterface
 
         if ($argument->isVariadic()
             || !\is_string($value)
-            || \is_object($value)
             || $type === null
         ) {
             return [];
         }
 
-        $class = class_exists($type ?? '') ? $type : null;
+        $class = class_exists($type) ? $type : null;
 
         if (!$class && $type !== 'int') {
             return [];
@@ -50,6 +52,9 @@ class SqidsValueResolver implements ValueResolverInterface
         }
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function decode(string $value): array
     {
         $decodedValues = $this->sqids->decode($value);
