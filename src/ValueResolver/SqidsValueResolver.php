@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Roukmoute\SqidsBundle\ValueResolver;
 
-use InvalidArgumentException;
 use Sqids\Sqids;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
@@ -44,7 +45,7 @@ class SqidsValueResolver implements ValueResolverInterface
             }
 
             return $decode;
-        } catch (InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $argument->getName()), $e);
         }
     }
@@ -54,13 +55,13 @@ class SqidsValueResolver implements ValueResolverInterface
         $decodedValues = $this->sqids->decode($value);
 
         if (count($decodedValues) > 1) {
-            throw new InvalidArgumentException('Only one value expected');
+            throw new \InvalidArgumentException('Only one value expected');
         }
 
         $decodedValue = $decodedValues[0];
 
         if ($decodedValue === 0 && $this->sqids->encode($decodedValues) !== $value) {
-            throw new InvalidArgumentException('Invalid value');
+            throw new \InvalidArgumentException('Invalid value');
         }
 
         return [$decodedValue];
