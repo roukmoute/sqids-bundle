@@ -140,6 +140,24 @@ class SqidsValueResolverSpec extends ObjectBehavior
 
     // Passthrough mode
 
+    function it_resolves_with_passthrough_and_auto_convert_enabled(Request $request, ParameterBag $attributes)
+    {
+        $this->beConstructedWith($this->sqids, true, true, Sqids::DEFAULT_ALPHABET);
+
+        $encoded = $this->sqids->encode([42]);
+        $request->attributes = $attributes;
+        $attributes->get('_sqid_id')->willReturn(null);
+        $attributes->get('id')->willReturn($encoded);
+        $attributes->has('sqids_prevent_alias')->willReturn(false);
+        $attributes->has('sqid')->willReturn(false);
+        $attributes->has('id')->willReturn(false);
+
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null);
+
+        $attributes->set('id', 42)->shouldBeCalled();
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
     function it_sets_decoded_value_in_request_when_passthrough_enabled(Request $request, ParameterBag $attributes)
     {
         $this->beConstructedWith($this->sqids, true, false, Sqids::DEFAULT_ALPHABET);
@@ -181,5 +199,29 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $argumentMetadata = new ArgumentMetadata('foo', 'int', false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
+    function it_skips_when_decode_returns_empty_array(\Sqids\SqidsInterface $mockSqids)
+    {
+        $this->beConstructedWith($mockSqids, false, false, Sqids::DEFAULT_ALPHABET);
+
+        $mockSqids->decode('validlooking')->willReturn([]);
+
+        $request = new Request([], [], ['_sqid_id' => 'validlooking']);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
+    function it_throws_when_decode_returns_empty_array_with_attribute(\Sqids\SqidsInterface $mockSqids)
+    {
+        $this->beConstructedWith($mockSqids, false, false, Sqids::DEFAULT_ALPHABET);
+
+        $mockSqids->decode('validlooking')->willReturn([]);
+
+        $request = new Request([], [], ['id' => 'validlooking']);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null, false, [new Sqid()]);
+
+        $this->shouldThrow(\LogicException::class)->during('resolve', [$request, $argumentMetadata]);
     }
 }

@@ -43,7 +43,7 @@ class Configuration implements ConfigurationInterface
                     ->defaultFalse()
                 ->end()
                 ->booleanNode('auto_convert')
-                    ->info('If true, automatically attempts to decode all string parameters. Use "_sqid_" prefix in routing for explicit conversion.')
+                    ->info('If true, automatically attempts to decode any route parameter matching an int argument name. When false, only parameters with "_sqid_" prefix or #[Sqid] attribute are decoded.')
                     ->defaultFalse()
                 ->end()
             ->end();
