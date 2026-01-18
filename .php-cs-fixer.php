@@ -5,6 +5,7 @@ $finder = PhpCsFixer\Finder::create()
     ->name('*.php')
     ->in(__DIR__ . '/')
     ->exclude('Resources/config')
+    ->exclude('spec')
     ->notPath('src/DependencyInjection/Configuration.php')
 ;
 

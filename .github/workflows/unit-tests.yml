@@ -49,7 +49,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          coverage: none
+          coverage: pcov
           extensions: "intl, bcmath"
           php-version: "${{ matrix.php }}"
 
