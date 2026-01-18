@@ -49,4 +49,40 @@ class SqidsExtensionSpec extends ObjectBehavior
 
         expect($twig->render('template'))->toBe('1');
     }
+
+    public function it_encodes_multiple_numbers()
+    {
+        $extension = new SqidsExtension($this->sqids);
+        $twig = new Environment(
+            new ArrayLoader(['template' => '{{ sqids_encode(1, 2, 3) }}']),
+            ['cache' => false, 'optimizations' => 0]
+        );
+        $twig->addExtension($extension);
+
+        expect($twig->render('template'))->toBe($this->sqids->encode([1, 2, 3]));
+    }
+
+    public function it_encodes_zero()
+    {
+        $extension = new SqidsExtension($this->sqids);
+        $twig = new Environment(
+            new ArrayLoader(['template' => '{{ 0|sqids_encode }}']),
+            ['cache' => false, 'optimizations' => 0]
+        );
+        $twig->addExtension($extension);
+
+        expect($twig->render('template'))->toBe($this->sqids->encode([0]));
+    }
+
+    public function it_decodes_empty_string_to_empty_array()
+    {
+        $extension = new SqidsExtension($this->sqids);
+        $twig = new Environment(
+            new ArrayLoader(['template' => "{{ ''|sqids_decode|length }}"]),
+            ['cache' => false, 'optimizations' => 0]
+        );
+        $twig->addExtension($extension);
+
+        expect($twig->render('template'))->toBe('0');
+    }
 }

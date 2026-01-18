@@ -25,9 +25,9 @@ class SqidsExtension extends AbstractExtension
         ];
     }
 
-    public function encode(int $number): string
+    public function encode(int ...$numbers): string
     {
-        return $this->sqids->encode([$number]);
+        return $this->sqids->encode($numbers);
     }
 
     /**
