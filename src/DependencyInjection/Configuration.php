@@ -38,6 +38,14 @@ class Configuration implements ConfigurationInterface
                     ->info('A list of sqids to block')
                     ->defaultValue(null)
                 ->end()
+                ->booleanNode('passthrough')
+                    ->info('If true, sets decoded value in request attributes for the next resolver (useful for Doctrine entity conversion)')
+                    ->defaultFalse()
+                ->end()
+                ->booleanNode('auto_convert')
+                    ->info('If true, automatically attempts to decode all string parameters. Use "_sqid_" prefix in routing for explicit conversion.')
+                    ->defaultFalse()
+                ->end()
             ->end();
 
         return $treeBuilder;

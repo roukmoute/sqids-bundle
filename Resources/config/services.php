@@ -17,7 +17,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(SqidsInterface::class, Sqids::class);
 
     $services->set(SqidsValueResolver::class)
-        ->args([service(SqidsInterface::class)])
+        ->args([
+            service(SqidsInterface::class),
+            param('sqids.passthrough'),
+            param('sqids.auto_convert'),
+            param('sqids.alphabet'),
+        ])
         ->tag('controller.argument_value_resolver', ['priority' => 150])
     ;
 

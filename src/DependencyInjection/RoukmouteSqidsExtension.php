@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 class RoukmouteSqidsExtension extends ConfigurableExtension
 {
     /**
-     * @param array{alphabet: string, min_length: int, blocklist: array<int, string>|null} $mergedConfig
+     * @param array{alphabet: string, min_length: int, blocklist: array<int, string>|null, passthrough: bool, auto_convert: bool} $mergedConfig
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
@@ -26,5 +26,9 @@ class RoukmouteSqidsExtension extends ConfigurableExtension
             ->setArgument(1, $mergedConfig['min_length'])
             ->setArgument(2, $mergedConfig['blocklist'])
         ;
+
+        foreach (['alphabet', 'passthrough', 'auto_convert'] as $parameter) {
+            $container->setParameter('sqids.' . $parameter, $mergedConfig[$parameter]);
+        }
     }
 }
