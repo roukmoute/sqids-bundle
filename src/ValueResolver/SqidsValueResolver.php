@@ -69,10 +69,7 @@ class SqidsValueResolver implements ValueResolverInterface
         }
     }
 
-    /**
-     * @return never
-     */
-    private function handleDecodeException(\InvalidArgumentException $exception, string $name, bool $hasAttribute): iterable
+    private function handleDecodeException(\InvalidArgumentException $exception, string $name, bool $hasAttribute): never
     {
         if ($hasAttribute) {
             throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $exception);
