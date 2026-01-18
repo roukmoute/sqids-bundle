@@ -64,20 +64,20 @@ class SqidsValueResolver implements ValueResolverInterface
             }
 
             return $decode;
-        } catch (\InvalidArgumentException $e) {
-            return $this->handleDecodeException($e, $name, $hasAttribute);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->handleDecodeException($exception, $name, $hasAttribute);
         }
     }
 
     /**
      * @return never
      */
-    private function handleDecodeException(\InvalidArgumentException $e, string $name, bool $hasAttribute): iterable
+    private function handleDecodeException(\InvalidArgumentException $exception, string $name, bool $hasAttribute): iterable
     {
         if ($hasAttribute) {
-            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $e);
+            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $exception);
         }
-        throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $e);
+        throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $exception);
     }
 
     private function getSqidAttribute(ArgumentMetadata $argument): ?Sqid
