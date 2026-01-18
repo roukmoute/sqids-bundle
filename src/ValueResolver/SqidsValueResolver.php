@@ -26,7 +26,6 @@ class SqidsValueResolver implements ValueResolverInterface
         $name = $argument->getName();
         $routeParameter = $sqidAttribute?->parameter ?? $name;
         $value = $request->attributes->get($routeParameter);
-        $type = $argument->getType();
 
         if ($argument->isVariadic() || !\is_string($value)) {
             return [];
@@ -34,10 +33,25 @@ class SqidsValueResolver implements ValueResolverInterface
 
         $hasAttribute = $sqidAttribute !== null;
 
-        if (!$hasAttribute && ($type === null || ($type !== 'int' && !class_exists($type)))) {
+        if (!$hasAttribute && !$this->isValidType($argument->getType())) {
             return [];
         }
 
+        return $this->decodeAndResolve($request, $argument, $value, $hasAttribute);
+    }
+
+    private function isValidType(?string $type): bool
+    {
+        return $type === 'int' || ($type !== null && class_exists($type));
+    }
+
+    /**
+     * @return iterable<int>
+     */
+    private function decodeAndResolve(Request $request, ArgumentMetadata $argument, string $value, bool $hasAttribute): iterable
+    {
+        $name = $argument->getName();
+        $type = $argument->getType();
         $class = $type !== null && class_exists($type) ? $type : null;
 
         try {
@@ -51,11 +65,19 @@ class SqidsValueResolver implements ValueResolverInterface
 
             return $decode;
         } catch (\InvalidArgumentException $e) {
-            if ($hasAttribute) {
-                throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $e);
-            }
-            throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $e);
+            return $this->handleDecodeException($e, $name, $hasAttribute);
         }
+    }
+
+    /**
+     * @return never
+     */
+    private function handleDecodeException(\InvalidArgumentException $e, string $name, bool $hasAttribute): iterable
+    {
+        if ($hasAttribute) {
+            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $e);
+        }
+        throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $e);
     }
 
     private function getSqidAttribute(ArgumentMetadata $argument): ?Sqid
