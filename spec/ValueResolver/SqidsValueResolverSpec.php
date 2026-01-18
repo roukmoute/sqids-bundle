@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\Roukmoute\SqidsBundle\ArgumentResolver;
+namespace spec\Roukmoute\SqidsBundle\ValueResolver;
 
 use PhpSpec\ObjectBehavior;
-use Roukmoute\SqidsBundle\ArgumentResolver\SqidsValueResolver;
+use Roukmoute\SqidsBundle\ValueResolver\SqidsValueResolver;
 use Sqids\Sqids;
 use stdClass;
 use Symfony\Component\HttpFoundation\ParameterBag;

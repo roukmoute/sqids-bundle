@@ -8,11 +8,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class SqidsExtension extends ConfigurableExtension
+class RoukmouteSqidsExtension extends ConfigurableExtension
 {
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
-        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../../config'));
+        $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__.'/../../Resources/config'));
         $loader->load('services.php');
 
         $container->getDefinition(Sqids::class)

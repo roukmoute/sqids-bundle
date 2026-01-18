@@ -1,6 +1,6 @@
 <?php
 
-namespace Roukmoute\SqidsBundle\ArgumentResolver;
+namespace Roukmoute\SqidsBundle\ValueResolver;
 
 use InvalidArgumentException;
 use Sqids\Sqids;
