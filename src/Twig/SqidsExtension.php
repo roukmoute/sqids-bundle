@@ -7,6 +7,7 @@ namespace Roukmoute\SqidsBundle\Twig;
 use Sqids\SqidsInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class SqidsExtension extends AbstractExtension
 {
@@ -22,6 +23,17 @@ class SqidsExtension extends AbstractExtension
         return [
             new TwigFilter('sqids_encode', [$this, 'encode']),
             new TwigFilter('sqids_decode', [$this, 'decode']),
+        ];
+    }
+
+    /**
+     * @return array<TwigFunction>
+     */
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('sqids_encode', [$this, 'encode']),
+            new TwigFunction('sqids_decode', [$this, 'decode']),
         ];
     }
 
