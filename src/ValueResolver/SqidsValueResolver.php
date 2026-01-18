@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Roukmoute\SqidsBundle\ValueResolver;
 
 use Roukmoute\SqidsBundle\Attribute\Sqid;
-use Sqids\Sqids;
+use Sqids\SqidsInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SqidsValueResolver implements ValueResolverInterface
 {
-    public function __construct(private Sqids $sqids)
-    {
+    public function __construct(
+        private readonly SqidsInterface $sqids,
+        private readonly bool $passthrough,
+        private readonly bool $autoConvert,
+        private readonly string $alphabet,
+    ) {
     }
 
     /**
@@ -22,59 +25,35 @@ class SqidsValueResolver implements ValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
+        $name = $argument->getName();
         $sqidAttribute = $this->getSqidAttribute($argument);
-        $name = $argument->getName();
         $routeParameter = $sqidAttribute?->parameter ?? $name;
-        $value = $request->attributes->get($routeParameter);
+        [$sqid, $isExplicit] = $this->getSqid($request, $routeParameter, $sqidAttribute !== null);
 
-        if ($argument->isVariadic() || !\is_string($value)) {
+        if ($this->isSkippable($sqid)) {
             return [];
         }
 
-        $hasAttribute = $sqidAttribute !== null;
+        $decoded = $this->sqids->decode($sqid);
 
-        if (!$hasAttribute && !$this->isValidType($argument->getType())) {
-            return [];
-        }
+        if ($this->hasSqidDecoded($decoded)) {
+            /** @var int $decodedValue */
+            $decodedValue = reset($decoded);
 
-        return $this->decodeAndResolve($request, $argument, $value, $hasAttribute);
-    }
-
-    private function isValidType(?string $type): bool
-    {
-        return $type === 'int' || ($type !== null && class_exists($type));
-    }
-
-    /**
-     * @return iterable<int>
-     */
-    private function decodeAndResolve(Request $request, ArgumentMetadata $argument, string $value, bool $hasAttribute): iterable
-    {
-        $name = $argument->getName();
-        $type = $argument->getType();
-        $class = $type !== null && class_exists($type) ? $type : null;
-
-        try {
-            $decode = $this->decode($value);
-
-            if ($class) {
-                $request->attributes->set($name, $decode[0]);
+            if ($this->passthrough) {
+                $request->attributes->set($name, $decodedValue);
 
                 return [];
             }
 
-            return $decode;
-        } catch (\InvalidArgumentException $exception) {
-            return $this->handleDecodeException($exception, $name, $hasAttribute);
+            return [$decodedValue];
         }
-    }
 
-    private function handleDecodeException(\InvalidArgumentException $exception, string $name, bool $hasAttribute): never
-    {
-        if ($hasAttribute) {
-            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $exception);
+        if ($isExplicit) {
+            throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name));
         }
-        throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $exception);
+
+        return [];
     }
 
     private function getSqidAttribute(ArgumentMetadata $argument): ?Sqid
@@ -86,22 +65,70 @@ class SqidsValueResolver implements ValueResolverInterface
     }
 
     /**
-     * @return array<int, int>
+     * @return array{0: string, 1: bool}
      */
-    private function decode(string $value): array
+    private function getSqid(Request $request, string $name, bool $hasSqidAttribute): array
     {
-        $decodedValues = $this->sqids->decode($value);
-
-        if (count($decodedValues) > 1) {
-            throw new \InvalidArgumentException('Only one value expected');
+        if ($name === '') {
+            return ['', false];
         }
 
-        $decodedValue = $decodedValues[0];
-
-        if ($decodedValue === 0 && $this->sqids->encode($decodedValues) !== $value) {
-            throw new \InvalidArgumentException('Invalid value');
+        $sqid = $request->attributes->get('_sqid_' . $name);
+        if (isset($sqid) && \is_string($sqid)) {
+            return [$sqid, true];
         }
 
-        return [$decodedValue];
+        if ($this->autoConvert || $hasSqidAttribute) {
+            $sqid = $request->attributes->get($name);
+            if (\is_string($sqid)) {
+                return [$sqid, $hasSqidAttribute];
+            }
+        }
+
+        $sqid = $this->getSqidFromAliases($request);
+        if ($sqid !== '') {
+            return [$sqid, true];
+        }
+
+        return ['', false];
+    }
+
+    private function getSqidFromAliases(Request $request): string
+    {
+        $sqid = '';
+
+        if (!$request->attributes->has('sqids_prevent_alias')) {
+            foreach (['sqid', 'id'] as $alias) {
+                if ($request->attributes->has($alias)) {
+                    $aliasAttribute = $request->attributes->get($alias);
+                    if (!\is_string($aliasAttribute)) {
+                        continue;
+                    }
+                    $sqid = $aliasAttribute;
+                    $request->attributes->set('sqids_prevent_alias', true);
+                    break;
+                }
+            }
+        }
+
+        return $sqid;
+    }
+
+    private function isSkippable(string $sqid): bool
+    {
+        return $sqid === '' || !$this->allCharsAreInAlphabet($sqid);
+    }
+
+    private function allCharsAreInAlphabet(string $sqid): bool
+    {
+        return (bool) preg_match(sprintf('{^[%s]+$}', preg_quote($this->alphabet, '{')), $sqid);
+    }
+
+    /**
+     * @param array<int, int> $decoded
+     */
+    private function hasSqidDecoded(array $decoded): bool
+    {
+        return \is_int(reset($decoded));
     }
 }
