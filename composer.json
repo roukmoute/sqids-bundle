@@ -34,6 +34,7 @@
     "infection/phpspec-adapter": "^0.2.1",
     "phpmd/phpmd": "^2.10",
     "phpspec/phpspec": "^7.4",
+    "phpspec/prophecy": "^1.17",
     "phpstan/phpstan": "^1.1",
     "phpstan/phpstan-symfony": "^1.0",
     "roave/security-advisories": "dev-latest",
