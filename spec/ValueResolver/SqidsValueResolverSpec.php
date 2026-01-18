@@ -3,6 +3,7 @@
 namespace spec\Roukmoute\SqidsBundle\ValueResolver;
 
 use PhpSpec\ObjectBehavior;
+use Roukmoute\SqidsBundle\Attribute\Sqid;
 use Roukmoute\SqidsBundle\ValueResolver\SqidsValueResolver;
 use Sqids\Sqids;
 use stdClass;
@@ -115,5 +116,37 @@ class SqidsValueResolverSpec extends ObjectBehavior
         $argumentMetadata = new ArgumentMetadata('id', 'string', false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);
+    }
+
+    function it_resolves_with_sqid_attribute()
+    {
+        $request = new Request([], [], ['id' => $this->sqids->encode([42])]);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null, false, [new Sqid()]);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([42]);
+    }
+
+    function it_resolves_with_sqid_attribute_and_custom_parameter()
+    {
+        $request = new Request([], [], ['sqid' => $this->sqids->encode([42])]);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null, false, [new Sqid(parameter: 'sqid')]);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([42]);
+    }
+
+    function it_resolves_with_sqid_attribute_without_type()
+    {
+        $request = new Request([], [], ['id' => $this->sqids->encode([42])]);
+        $argumentMetadata = new ArgumentMetadata('id', null, false, false, null, false, [new Sqid()]);
+
+        $this->resolve($request, $argumentMetadata)->shouldReturn([42]);
+    }
+
+    function it_throws_logic_exception_when_decode_fails_with_attribute()
+    {
+        $request = new Request([], [], ['id' => $this->sqids->encode([1, 2, 3])]);
+        $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null, false, [new Sqid()]);
+
+        $this->shouldThrow(\LogicException::class)->during('resolve', [$request, $argumentMetadata]);
     }
 }

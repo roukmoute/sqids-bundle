@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Roukmoute\SqidsBundle\ValueResolver;
 
+use Roukmoute\SqidsBundle\Attribute\Sqid;
 use Sqids\Sqids;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
@@ -21,35 +22,48 @@ class SqidsValueResolver implements ValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        $value = $request->attributes->get($argument->getName());
+        $sqidAttribute = $this->getSqidAttribute($argument);
+        $name = $argument->getName();
+        $routeParameter = $sqidAttribute?->parameter ?? $name;
+        $value = $request->attributes->get($routeParameter);
         $type = $argument->getType();
 
-        if ($argument->isVariadic()
-            || !\is_string($value)
-            || $type === null
-        ) {
+        if ($argument->isVariadic() || !\is_string($value)) {
             return [];
         }
 
-        $class = class_exists($type) ? $type : null;
+        $hasAttribute = $sqidAttribute !== null;
 
-        if (!$class && $type !== 'int') {
+        if (!$hasAttribute && ($type === null || ($type !== 'int' && !class_exists($type)))) {
             return [];
         }
+
+        $class = $type !== null && class_exists($type) ? $type : null;
 
         try {
             $decode = $this->decode($value);
 
             if ($class) {
-                $request->attributes->set($argument->getName(), $decode[0]);
+                $request->attributes->set($name, $decode[0]);
 
                 return [];
             }
 
             return $decode;
         } catch (\InvalidArgumentException $e) {
-            throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $argument->getName()), $e);
+            if ($hasAttribute) {
+                throw new \LogicException(sprintf('Unable to decode parameter "%s".', $name), 0, $e);
+            }
+            throw new NotFoundHttpException(sprintf('The sqid for the "%s" parameter is invalid.', $name), $e);
         }
+    }
+
+    private function getSqidAttribute(ArgumentMetadata $argument): ?Sqid
+    {
+        /** @var Sqid[] $attributes */
+        $attributes = $argument->getAttributes(Sqid::class, ArgumentMetadata::IS_INSTANCEOF);
+
+        return $attributes[0] ?? null;
     }
 
     /**
