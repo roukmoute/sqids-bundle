@@ -26,7 +26,14 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('blocklist')
                     ->beforeNormalization()
                         ->ifString()
-                        ->then(function (string $path): array { return json_decode(file_get_contents($path), false, 512, JSON_THROW_ON_ERROR); })
+                        ->then(static function (string $path): array {
+                            $contents = file_get_contents($path);
+                            if ($contents === false) {
+                                throw new \RuntimeException(sprintf('Could not read blocklist file: %s', $path));
+                            }
+                            /** @var array<int, string> */
+                            return json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+                        })
                     ->end()
                     ->info('A list of sqids to block')
                     ->defaultValue(null)

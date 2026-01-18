@@ -12,6 +12,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 class RoukmouteSqidsExtension extends ConfigurableExtension
 {
+    /**
+     * @param array{alphabet: string, min_length: int, blocklist: array<int, string>|null} $mergedConfig
+     */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
         $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));
