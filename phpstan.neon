@@ -1,0 +1,13 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+
+parameters:
+	level: max
+	paths:
+		- src
+	parallel:
+		maximumNumberOfProcesses: 1
+	ignoreErrors:
+		-
+			message: '#Call to method \w+\(\) on an unknown class Symfony\\Component\\Config\\Definition\\Builder\\NodeBuilder<.+>#'
+			reportUnmatched: false
