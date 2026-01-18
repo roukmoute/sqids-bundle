@@ -203,11 +203,11 @@ class SqidsValueResolverSpec extends ObjectBehavior
 
     function it_skips_when_decode_returns_empty_array(\Sqids\SqidsInterface $mockSqids)
     {
-        $this->beConstructedWith($mockSqids, false, false, Sqids::DEFAULT_ALPHABET);
+        $this->beConstructedWith($mockSqids, false, true, Sqids::DEFAULT_ALPHABET);
 
         $mockSqids->decode('validlooking')->willReturn([]);
 
-        $request = new Request([], [], ['_sqid_id' => 'validlooking']);
+        $request = new Request([], [], ['id' => 'validlooking']);
         $argumentMetadata = new ArgumentMetadata('id', 'int', false, false, null);
 
         $this->resolve($request, $argumentMetadata)->shouldReturn([]);
