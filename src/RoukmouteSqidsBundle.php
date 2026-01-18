@@ -4,6 +4,6 @@ namespace Roukmoute\SqidsBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class SqidsBundle extends Bundle
+class RoukmouteSqidsBundle extends Bundle
 {
 }

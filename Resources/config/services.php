@@ -2,7 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Roukmoute\SqidsBundle\ArgumentResolver\SqidsValueResolver;
+use Roukmoute\SqidsBundle\ValueResolver\SqidsValueResolver;
 use Sqids\Sqids;
 use Sqids\SqidsInterface;
 
