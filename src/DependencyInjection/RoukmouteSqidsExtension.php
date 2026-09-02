@@ -15,7 +15,7 @@ class RoukmouteSqidsExtension extends ConfigurableExtension
     /**
      * @param array{alphabet: string, min_length: int, blocklist: array<int, string>|null, passthrough: bool, auto_convert: bool} $mergedConfig
      */
-    protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
+    protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new Loader\PhpFileLoader($container, new FileLocator(__DIR__ . '/../../Resources/config'));
         $loader->load('services.php');
